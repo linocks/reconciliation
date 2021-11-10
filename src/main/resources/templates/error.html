@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Error Page</title>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" href="css/main.css" th:href="@{/css/main.css}"/>
+</head>
+<body>
+
+<section id="error-page" style="color: #600202 !important;" th:with="httpStatus=${T(org.springframework.http.HttpStatus).valueOf(#response.status)}">
+    <div>
+        <h1 class="brown">Oooooops !!!!</h1>
+        <h4 class="brown" th:text="|${httpStatus} - ${httpStatus.reasonPhrase}|"></h4>
+        <h4 class="brown">Something Went Wrong</h4>
+        <h5 class="brown">If Error Persists, Contact Administrator via knocksto1@gmail.com</h5>
+    </div>
+    <div style="margin-top: 20px;">
+        <a class="btn btn-error" th:href="@{/}">Back to Home Page</a>
+    </div>
+</section>
+</body>
+</html>

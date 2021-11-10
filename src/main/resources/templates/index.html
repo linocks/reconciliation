@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Financial Reconciliation</title>
+    <link rel="stylesheet" th:href="@{css/main.css}">
+</head>
+<body>
+    <main class="container">
+        <section class="content">
+            <form th:action="@{/compare}" id="compare-form" method="POST" enctype="multipart/form-data">
+                <fieldset>
+                    <legend>Select Files to Compare</legend>
+                    <div>
+                        <div>
+                            <label for="csvFile1">Select file 1</label>
+                            <input type="file" name="csvFile1" class="file-input" id="csvFile1" accept=".csv" onchange="return validateFile(this)" required />
+                        </div>
+                    </div>
+
+                    <div>
+                        <div>
+                            <label for="csvFile2">Select file 2</label>
+                            <input type="file" name="csvFile2" class="file-input" id="csvFile2" accept=".csv" onchange="return validateFile(this)" required />
+                            <button type="submit" id="compare-btn" onclick="submitForm()" class="btn">Compare</button>
+                        </div>
+                    </div>
+                    <br/>
+
+                    <div>
+                        <div id="error" class="error hidden">
+
+                        </div>
+                        <div th:if="${error}" class="error">
+                            <strong th:text="${error}"></strong>
+                        </div>
+                    </div>
+                </fieldset>
+                <br/>
+            </form>
+
+            <fieldset th:if="${showCompare}">
+                <legend>Comparison Result</legend>
+                <div class="row-2">
+                    <div class="col">
+                        <p class="file" th:text="${file1}"></p>
+                        <p>Total Records: <span th:text="${file1TotalRecords}"></span></p>
+                        <p>Matching Records: <span th:text="${matchingRecords}"></span></p>
+                        <p>Unmatched Records:<span th:text="${file1Unmatched}"></span></p>
+                    </div>
+                    <div class="col">
+                        <p class="file" th:text="${file2}"></p>
+                        <p>Total Records: <span th:text="${file2TotalRecords}"></span></p>
+                        <p>Matching Records: <span th:text="${matchingRecords}"></span></p>
+                        <p>Unmatched Records:<span th:text="${file2Unmatched}"></span></p>
+                    </div>
+                </div>
+                <div class="center-row">
+                    <button  class="btn" onclick="toggleReport()">Unmatched Report</button>
+                </div>
+            </fieldset>
+            <br/>
+
+            <fieldset id="table-fieldset" class="hidden">
+                    <legend>Unmatched Report</legend>
+                    <div>
+                        <div class="table-row">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th colspan="3" style="font-weight: 600" th:text="${file1}"></th>
+                                        <th colspan="3" style="font-weight: 600" th:text="${file2}"></th>
+                                    </tr>
+                                    <tr>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Reference</th>
+                                        <th scope="col">Amount</th>
+                                        <th scope="col">Date</th>
+                                        <th scope="col">Reference</th>
+                                        <th scope="col">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="report : ${unMatchedReport}">
+                                        <td th:text="${report.date1}"></td>
+                                        <td th:text="${report.reference1}"></td>
+                                        <td class="amount" th:text="${report.amount1}"></td>
+                                        <td th:text="${report.date2}"></td>
+                                        <td th:text="${report.reference2}"></td>
+                                        <td class="amount" th:text="${report.amount2}"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </fieldset>
+
+        </section>
+    </main>
+<script>
+    function validateFile(elem) {
+        var fileInput = document.getElementById(elem.id);
+        console.log(elem.id);
+        var filePath = fileInput.value;
+        console.log(filePath)
+        var re = /(\.csv)$/i;
+        if (!re.exec(filePath) && !filePath == "") {
+            document.querySelector("#error").innerHTML = "<strong>FILE REJECTED !!</strong> Only CSV's are allowed."
+            document.querySelector("#error").classList.remove('hidden');
+            fileInput.value = "";
+        }else{
+            document.querySelector("#error").classList.add('hidden');
+        }
+    }
+
+    function toggleReport(event){
+        const elem = document.querySelector("#table-fieldset");
+        if(elem.classList.contains('hidden')){
+            elem.classList.remove('hidden');
+        }else{
+            elem.classList.add('hidden');
+        }
+    }
+
+   document.querySelector("#compare-btn").addEventListener("click", function(event) {
+         event.preventDefault();
+         var file1 = document.getElementById('csvFile1');
+         var file2 = document.getElementById('csvFile2');
+
+         if(file1.files.length == 0 || file2.files.length == 0){
+            document.querySelector("#error").innerHTML = "Files cannot be Empty !!!"
+            return;
+         }
+            document.querySelector("#compare-form").submit();
+        }, false);
+</script>
+</script>
+</body>
+</html>
